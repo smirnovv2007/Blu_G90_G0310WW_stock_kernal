@@ -1,26 +1,0 @@
-make[1]: Entering directory '/home/mrmazak/twrp10-wip/kernel/blu/G90/out'
-  GEN     ./Makefile
-scripts/kconfig/conf  --silentoldconfig Kconfig
-drivers/input/touchscreen/mediatek/Kconfig:88:warning: ignoring unsupported character ''
-drivers/input/touchscreen/mediatek/hxchipset/Kconfig:5:warning: ignoring unsupported character ''
-drivers/input/touchscreen/mediatek/hxchipset/Kconfig:6:warning: ignoring unsupported character ''
-drivers/input/touchscreen/mediatek/hxchipset/Kconfig:7:warning: ignoring unsupported character ''
-drivers/input/touchscreen/mediatek/hxchipset/Kconfig:7:warning: ignoring unsupported character ''
-drivers/input/touchscreen/mediatek/hxchipset/Kconfig:13:warning: ignoring unsupported character ''
-drivers/input/touchscreen/mediatek/hxchipset/Kconfig:14:warning: ignoring unsupported character ''
-drivers/input/touchscreen/mediatek/hxchipset/Kconfig:15:warning: ignoring unsupported character ''
-drivers/input/touchscreen/mediatek/hxchipset/Kconfig:16:warning: ignoring unsupported character ''
-drivers/input/touchscreen/mediatek/HX83112/Kconfig:11:warning: ignoring type redefinition of 'TOUCHSCREEN_HIMAX_DEBUG' from 'boolean' to 'tristate'
-arch/arm64/Makefile:27: ld does not support --fix-cortex-a53-843419; kernel may be susceptible to erratum
-../scripts/gcc-version.sh: line 25: aarch64-linux-gnu-gcc: command not found
-../scripts/gcc-version.sh: line 26: aarch64-linux-gnu-gcc: command not found
-make[1]: aarch64-linux-gnu-gcc: Command not found
-make[1]: aarch64-linux-gnu-gcc: Command not found
-  CHK     include/config/kernel.release
-make[1]: aarch64-linux-gnu-gcc: Command not found
-Cannot use CONFIG_CC_STACKPROTECTOR_STRONG: -fstack-protector-strong not supported by compiler
-make[1]: *** [/home/mrmazak/twrp10-wip/kernel/blu/G90/Makefile:1184: prepare-compiler-check] Error 1
-make[1]: *** Waiting for unfinished jobs....
-  UPD     include/config/kernel.release
-make[1]: Leaving directory '/home/mrmazak/twrp10-wip/kernel/blu/G90/out'
-make: *** [Makefile:152: sub-make] Error 2
