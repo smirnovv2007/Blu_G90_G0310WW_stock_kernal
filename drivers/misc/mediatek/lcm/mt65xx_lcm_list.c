@@ -28,9 +28,69 @@ enum LCM_DSI_MODE_CON lcm_dsi_mode;
 #define LCD_HW_ID_STATUS_ERROR  0x03
 
 struct LCM_DRIVER *lcm_driver_list[] = {
+	
+/*prize-add lcm-zhaopengge-20200826-start*/	
+#if defined(NL9911_FHDP_DSI_VDO_INCELL)
+	&nl9911_fhdp_dsi_vdo_incell_lcm_drv,
+#endif
+/*prize-add lcm-zhaopengge-20200826-end*/
+/*prize-add lcm-tangcong-20200819-start*/	
+#if defined(ST7703_HDPLUS_DSI_VDO_CMI_YKL)
+	&st7703_hdplus_dsi_vdo_cmi_ykl_lcm_drv,
+#endif
+/*prize-add lcm-tangcong-20200819-end*/
+/*prize-add lcm-pengguangyi-20190119-start*/
+#if defined(HX83112_FHDP_DSI_VDO_AUO)
+	&hx83112_fhdp_dsi_vdo_auo_drv,
+#endif	
+/*prize-add lcm-pengguangyi-20190119-end*/
+//prize-add-pengzhipeng-20200304-start
+#if defined(HX83102D_HDP_DSI_VDO_BOE_DRIP_INCELL)
+	&hx83102d_hdp_dsi_vdo_boe_drip_incell_lcm_drv,
+#endif
+//prize-add-pengzhipeng-20200304-start
+/*prize-add NL9911-songhezhu-20191231-start*/
+#if defined(NL9911_FHDP_VDO_INCELL)
+	&nl9911_fhdp_vdo_incell_lcm_drv,
+#endif
+/*prize-add by songhezhu 20191231-end*/
+//prize add by lishuwen 20191226 start
+#if defined(ILI9881D_HDPLUS1560_DSI_VDO_HSD)
+	&ili9881d_hdplus1560_dsi_vdo_hsd_lcm_drv,
+#endif
+#if defined(ILI9881C_HDPLUS_DSI_VDO_CMI_BX)
+	&ili9881c_hdplus_dsi_vdo_cmi_bx_lcm_drv,
+#endif
+
+#if defined(ILI9881C_HDPLUS_DSI_VDO_CMI_JT)
+	&ili9881c_hdplus_dsi_vdo_cmi_jt_lcm_drv,
+#endif
+
+#if defined(ILI9881C_HD_DSI_VDO_CMI_PCBA_ATA)
+	&ili9881c_hd_dsi_vdo_cmi_pcba_ata_lcm_drv,
+#endif
+/*prize-add lcm -tangcong-20200612-start*/
+#if defined(JD9366D_HDPLUS_DSI_VDO_DZX)
+	&jd9366d_hdplus_dsi_vdo_dzx_lcm_drv,
+#endif
+/*prize-add lcm -tangcong-20200612-end*/
+//prize add by lishuwen 20191226 end
 #if defined(NT36672AH_HDP_DSI_VDO_TCL_CSOT)
 	&nt36672ah_hdp_dsi_vdo_tcl_csot_lcm_drv,
 #endif
+/* prize added by chenjiaxi, lcm, 20190401-start */
+#if defined(NT35532_HD720_DSI_VDO_XM)
+	&nt35532_hd720_dsi_vdo_xm_lcm_drv,
+#endif
+/* prize added by chenjiaxi, lcm, 20190401-end */
+/*prize-add HX8394F-chenhongjin-20190118-start*/
+#if defined(ILI9881C_HD_DSI_VDO_CMI_ATA)
+	&ili9881c_hd_dsi_vdo_cmi_ata_lcm_drv,
+#endif
+#if defined(HX8394F_DSI_VDO_T20)
+	&hx8394f_dsi_vdo_t20_lcm_drv,
+#endif
+/*prize-add HX8394F-chenhongjin-20190118-end*/
 #if defined(OTM1284A_HD720_DSI_VDO_TM)
 	&otm1284a_hd720_dsi_vdo_tm_lcm_drv,
 #endif
@@ -1177,6 +1237,14 @@ struct LCM_DRIVER *lcm_driver_list[] = {
 #if defined(OPPO_TIANMA_TD4310_FHDP_DSI_VDO_RT5081)
 	&oppo_tianma_td4310_fhdp_dsi_vdo_rt5081_lcm_drv,
 #endif
+/* prize added by mahuiyin, lcm, 20190823-start */
+#if defined(FT8006P_HDP_DSI_VDO_BOE_DRIP_INCELL)
+	&ft8006p_hdp_dsi_vdo_boe_drip_incell_lcm_drv,
+#endif
+#if defined(FT8719P_HDP_DSI_VDO_BOE_DRIP_INCELL)
+	&ft8719p_hdp_dsi_vdo_boe_drip_incell_lcm_drv,
+#endif
+/* prize added by mahuiyin, lcm, 20190823-end */
 };
 
 unsigned char lcm_name_list[][128] = {

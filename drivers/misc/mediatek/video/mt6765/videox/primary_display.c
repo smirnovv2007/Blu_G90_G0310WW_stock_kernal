@@ -97,6 +97,13 @@
 #include <linux/pm_qos.h>
 #endif
 
+//prize-lixuefeng-20150512-start
+#if defined(CONFIG_PRIZE_HARDWARE_INFO)
+#include "../../../hardware_info/hardware_info.h"
+extern struct hardware_info current_lcm_info;
+#endif
+//prize-lixuefeng-20150512-end
+
 #define MMSYS_CLK_LOW (0)
 #define MMSYS_CLK_HIGH (1)
 #define TUI_SINGLE_WINDOW_MODE (0)
@@ -3786,6 +3793,11 @@ int primary_display_init(char *lcm_name, unsigned int lcm_fps,
 		goto done;
 	} else {
 		DISPCHECK("disp_lcm_probe SUCCESS\n");
+		//prize-lixuefeng-20150512-start
+		#if defined(CONFIG_PRIZE_HARDWARE_INFO)
+		current_lcm_info=pgc->plcm->drv->lcm_info;
+		#endif
+		//prize-lixuefeng-20150512-end
 	}
 
 	lcm_param = disp_lcm_get_params(pgc->plcm);
@@ -6936,7 +6948,8 @@ int primary_display_user_cmd(unsigned int cmd, unsigned long arg)
 	mmprofile_log_ex(ddp_mmp_get_events()->primary_display_cmd,
 		MMPROFILE_FLAG_START, _IOC_NR(cmd), 0);
 
-	if (cmd == DISP_IOCTL_AAL_GET_HIST || cmd == DISP_IOCTL_CCORR_GET_IRQ) {
+	if (cmd == DISP_IOCTL_AAL_GET_HIST || cmd == DISP_IOCTL_CCORR_GET_IRQ
+		|| cmd == DISP_IOCTL_SUPPORT_COLOR_TRANSFORM) {
 		_primary_path_lock(__func__);
 
 		if (disp_helper_get_option(DISP_OPT_USE_CMDQ)) {
@@ -7550,7 +7563,13 @@ int primary_display_get_info(struct disp_session_info *info)
 	dispif_info->physicalHeightUm = DISP_GetActiveHeightUm();
 	dispif_info->density = DISP_GetDensity();
 
-	dispif_info->vsyncFPS = pgc->lcm_fps;
+  //add by liaojie@szrpize.com 20191223 for cts-gsi android.display.cts.DisplayTest#testModeSwitch start
+    //dispif_info->vsyncFPS = pgc->lcm_fps;
+	   if (pgc->lcm_fps <= 6000)
+		   dispif_info->vsyncFPS = pgc->lcm_fps;
+	   else
+		   dispif_info->vsyncFPS = 6000;
+  //add by liaojie@szrpize.com20191223 for cts-gsi android.display.cts.DisplayTest#testModeSwitch end
 
 	dispif_info->isConnected = 1;
 
@@ -8616,41 +8635,57 @@ unsigned int primary_display_get_option(const char *option)
 
 int primary_display_lcm_ATA(void)
 {
-	enum DISP_STATUS ret = DISP_STATUS_OK;
+	struct dsi_cmd_desc cmd_tab[3];
+	unsigned int i;
+	unsigned int ret = 0;
 
 	DISPFUNC();
-	_primary_path_switch_dst_lock();
-	primary_display_esd_check_enable(0);
-	_primary_path_lock(__func__);
-	disp_irq_esd_cust_bycmdq(0);
-	if (pgc->state == 0) {
-		DISPCHECK(
-			"ATA_LCM, primary display path is already sleep, skip\n");
-		goto done;
+	if (!primary_display_is_video_mode()) {
+		_primary_path_switch_dst_lock();
+		primary_display_esd_check_enable(0);
+		_primary_path_lock(__func__);
+		disp_irq_esd_cust_bycmdq(0);
+		if (pgc->state == 0) {
+			DISPCHECK(
+				"path is already sleep, skip ata lcm read\n");
+			goto done;
+		}
+		ret = disp_lcm_ATA(pgc->plcm);
+		dpmgr_path_start(pgc->dpmgr_handle, CMDQ_DISABLE);
+	} else {
+		memset(&cmd_tab, 0, 3 * sizeof(struct dsi_cmd_desc));
+
+		/*read display power mode*/
+		cmd_tab[0].dtype = 0x0A;
+		cmd_tab[0].payload = vmalloc(4 * sizeof(unsigned char));
+		memset(cmd_tab[0].payload, 0, 4);
+		cmd_tab[0].dlen = 4;
+
+		do_lcm_vdo_lp_read(cmd_tab, 1);
+
+		DISPINFO("read lcm addr:0x%x--dlen:%d\n",
+			cmd_tab[0].dtype, cmd_tab[0].dlen);
+		for (i = 0; i < cmd_tab[0].dlen; i++) {
+			DISPINFO("read lcm addr:0x%x--byte:%d,val:0x%x\n",
+			cmd_tab[0].dtype, i, *(cmd_tab[0].payload + i));
+		}
+
+		if (*(cmd_tab[0].payload) == 0x9C) {
+			DISPINFO("[LCM ATA Check] [0x0A]=0x%02x\n",
+				*(cmd_tab[0].payload));
+			ret = 1;
+		} else {
+			ret = disp_lcm_ATA(pgc->plcm);
+		}
+		vfree(cmd_tab[0].payload);
 	}
-
-	DISPCHECK("dxs [ATA_LCM]primary display path stop[begin]\n");
-	if (primary_display_is_video_mode())
-		dpmgr_path_ioctl(pgc->dpmgr_handle, NULL,
-			DDP_STOP_VIDEO_MODE, NULL);
-
-	DISPCHECK("[ATA_LCM]primary display path stop[end]\n");
-	ret = disp_lcm_ATA(pgc->plcm);
-	dpmgr_path_start(pgc->dpmgr_handle, CMDQ_DISABLE);
-	if (primary_display_is_video_mode()) {
-		/*
-		 * for video mode, we need to force trigger here
-		 * for cmd mode, just set DPREC_EVENT_CMDQ_SET_EVENT_ALLOW when
-		 * trigger loop start
-		 */
-		dpmgr_path_trigger(pgc->dpmgr_handle, NULL, CMDQ_DISABLE);
-	}
-
 done:
-	disp_irq_esd_cust_bycmdq(1);
-	_primary_path_unlock(__func__);
-	primary_display_esd_check_enable(1);
-	_primary_path_switch_dst_unlock();
+	if (!primary_display_is_video_mode()) {
+		disp_irq_esd_cust_bycmdq(1);
+		_primary_path_unlock(__func__);
+		primary_display_esd_check_enable(1);
+		_primary_path_switch_dst_unlock();
+	}
 	return ret;
 }
 

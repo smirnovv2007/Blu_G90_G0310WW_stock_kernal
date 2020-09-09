@@ -52,6 +52,12 @@
 
 #include "bmi160_acc.h"
 
+//prize added by tangcong, sensor driver, 20200103-start
+#if defined(CONFIG_PRIZE_HARDWARE_INFO)
+#include "../../../hardware_info/hardware_info.h"
+extern struct hardware_info current_gsensor_info;
+#endif
+//prize added by tangcong, sensor driver, 20200103-end
 #define SW_CALIBRATION
 /* #define FIFO_READ_USE_DMA_MODE_I2C */
 
@@ -3540,6 +3546,14 @@ static int bmi160_acc_i2c_probe(struct i2c_client *client,
 	err = bmi160_acc_init_client(new_client, 1);
 	INIT_WORK(&obj->irq_work, bmi_irq_work_func);
 	bmi160_acc_init_flag = 0;
+//prize added by tangcong, sensor driver, 20200103-start
+#if defined(CONFIG_PRIZE_HARDWARE_INFO)
+	 strcpy(current_gsensor_info.chip,"bmg160_acc");
+	 sprintf(current_gsensor_info.id,"0x%04x",client->addr);
+	 strcpy(current_gsensor_info.vendor,"bosch");
+	 strcpy(current_gsensor_info.more,"accelerator");
+#endif
+//prize added by tangcong, sensor driver, 20200103-end
 	pr_debug("%s: is ok.\n", __func__);
 	return 0;
 

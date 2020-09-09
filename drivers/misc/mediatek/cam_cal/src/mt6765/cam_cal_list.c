@@ -59,6 +59,17 @@ struct stCAM_CAL_LIST_STRUCT g_camCalList[] = {
 	{HI556_SENSOR_ID, 0x51, Common_read_region},
 	{S5K5E8YX_SENSOR_ID, 0x5a, Common_read_region},
 	{S5K5E8YXREAR2_SENSOR_ID, 0x5a, Common_read_region},
+	// prize add by zhuzhengjiang for OTP 20191212 start
+	{S5K3L6_SENSOR_ID, 0xA0, Common_read_region},
+	{OV16A10_SENSOR_ID, 0xA2, Common_read_region},
+	{OV16A1Q_SENSOR_ID, 0xA0, Common_read_region},
+	{S5K4H7YX_SENSOR_ID, 0xA2, Common_read_region},
+#if defined(CONFIG_DUALCAM_CALI_RW) 
+	{S5KGM1SP_SENSOR_ID, 0xB0, Common_read_region,S5KGM1SP_MAX_EEPROM_SIZE,Common_write_region}, /*prize add by zhengjiang.zhu for dual camea calibration write otp 20191205-start*/
+#else
+	{S5KGM1SP_SENSOR_ID, 0xB0, Common_read_region},
+#endif	
+	// prize add by zhuzhengjiang for OTP 20191212 end
 	/*  ADD before this line */
 	{0, 0, 0}       /*end of list */
 };

@@ -244,7 +244,9 @@ static ssize_t fbconfig_write(struct file *file,
 	return 0;
 }
 
-
+/* prize added by tangcong, panel master mipi clk, 20200417-start */
+uint32_t Pre_CLK = 0;
+/* prize added by tangcong, panel master mipi clk, 20200417-end */
 static long fbconfig_ioctl(struct file *file, unsigned int cmd,
 	unsigned long arg)
 {
@@ -355,7 +357,9 @@ static long fbconfig_ioctl(struct file *file, unsigned int cmd,
 				 __LINE__);
 			return -EFAULT;
 		}
-
+        /* prize added by tangcong, panel master mipi clk, 20200417-start */
+        Pre_CLK = clk;
+		/* prize added by tangcong, panel master mipi clk, 20200417-end */
 		pr_debug("LCM_GET_DSI_CLK=>dsi:%d\n", clk);
 		Panel_Master_dsi_config_entry("PM_CLK", &clk);
 		return 0;

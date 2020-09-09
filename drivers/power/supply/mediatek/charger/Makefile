@@ -37,3 +37,19 @@ obj-$(CONFIG_CHARGER_RT9465) += rt9465.o
 obj-$(CONFIG_CHARGER_RT9471) += rt9471.o
 obj-$(CONFIG_CHARGER_BQ25601) += bq25601.o
 obj-$(CONFIG_MTK_BQ25890_SUPPORT) += bq25890.o
+
+#//prize added by huarui, eta6937 support, 20190111-start
+obj-$(CONFIG_HL7005ALL_CHARGER_SUPPORT) += hl7005all.o
+#//prize added by huarui, eta6937 support, 20190111-end
+
+#//prize added by huarui, ne6153 support, 20190111-start
+obj-$(CONFIG_PRIZE_NE6153_SUPPORT) += ne6153.o
+#//prize added by huarui, ne6153 support, 20190111-end
+
+# begin, prize-sunshuai-20200111, add for wireless power receiver mt5715
+obj-$(CONFIG_PRIZE_WIRELESS_RECEIVER_MAXIC_MT5715) += MT5715_wireless_driver.o
+# end, prize-sunshuai-20200111, add for wireless power receiver mt5715
+
+#//prize added by sunshuai, charge support, 20200507-start
+obj-$(CONFIG_PRIZE_MT5725_SUPPORT_15W) += mt5725_wireless_driver-15w.o
+#//prize added by sunshuai, charge support, 20200507-end

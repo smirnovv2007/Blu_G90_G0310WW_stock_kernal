@@ -57,6 +57,24 @@ static const char *const typec_wait_ps_name[] = {
 	"SRC_VSafe5V",
 };
 #endif	/* TYPEC_INFO2_ENABLE */
+/*prize-sunshuai-20190213, add for Wireless charging and OTG switching  start*/
+#if defined(CONFIG_PRIZE_NE6153_SUPPORT) || defined(CONFIG_PRIZE_WIRELESS_RECEIVER_MAXIC_MT5715) || defined(CONFIG_PRIZE_MT5725_SUPPORT_15W)
+extern int set_otg_gpio(int en);
+
+#if defined(CONFIG_PRIZE_NE6153_SUPPORT)
+extern int wrx_disable_vout(void);
+#endif
+
+#if defined(CONFIG_PRIZE_WIRELESS_RECEIVER_MAXIC_MT5715)
+extern  int  ldo_disable(void);
+#endif
+
+#if defined(CONFIG_PRIZE_MT5725_SUPPORT_15W)
+extern int turn_off_5725(int en);
+#endif
+
+#endif
+/*prize-sunshuai-20190213, add for Wireless charging and OTG switching  end*/
 
 static inline void typec_wait_ps_change(struct tcpc_device *tcpc_dev,
 					enum TYPEC_WAIT_PS_STATE state)
@@ -2017,6 +2035,50 @@ int tcpc_typec_handle_cc_change(struct tcpc_device *tcpc_dev)
 		|| tcpc_dev->typec_state == typec_attachwait_src)
 		typec_wait_ps_change(tcpc_dev, TYPEC_WAIT_PS_DISABLE);
 
+/*prize-sunshuai-20190213, add for Wireless charging and OTG switching  start */
+#if defined(CONFIG_PRIZE_NE6153_SUPPORT) || defined(CONFIG_PRIZE_WIRELESS_RECEIVER_MAXIC_MT5715) || defined(CONFIG_PRIZE_MT5725_SUPPORT_15W)
+	if (typec_is_cc_attach(tcpc_dev)) {
+#if defined(CONFIG_PRIZE_NE6153_SUPPORT)
+		wrx_disable_vout();
+#endif
+
+#if defined(CONFIG_PRIZE_WIRELESS_RECEIVER_MAXIC_MT5715)
+        ldo_disable();
+#endif
+
+#if defined(CONFIG_PRIZE_MT5725_SUPPORT_15W)
+		turn_off_5725(1);
+#endif
+
+#if defined(CONFIG_PRIZE_NE6153_SUPPORT) || defined(CONFIG_PRIZE_WIRELESS_RECEIVER_MAXIC_MT5715)
+		set_otg_gpio(1);
+#endif
+
+		typec_attach_wait_entry(tcpc_dev);
+#ifdef CONFIG_WATER_DETECTION
+		if (typec_state_old == typec_unattached_snk ||
+		    typec_state_old == typec_unattached_src) {
+#ifdef CONFIG_WD_POLLING_ONLY
+			if (get_boot_mode() == KERNEL_POWER_OFF_CHARGING_BOOT
+			    || get_boot_mode() == LOW_POWER_OFF_CHARGING_BOOT)
+				typec_check_water_status(tcpc_dev);
+#else
+			typec_check_water_status(tcpc_dev);
+#endif /* CONFIG_WD_POLLING_ONLY */
+		}
+#endif /* CONFIG_WATER_DETECTION */
+	} else{
+#if defined(CONFIG_PRIZE_NE6153_SUPPORT) || defined(CONFIG_PRIZE_WIRELESS_RECEIVER_MAXIC_MT5715)
+        set_otg_gpio(0);
+#endif
+
+#if defined(CONFIG_PRIZE_MT5725_SUPPORT_15W)
+		turn_off_5725(0);
+#endif
+		typec_detach_wait_entry(tcpc_dev);
+	}
+	
+#else
 	if (typec_is_cc_attach(tcpc_dev)) {
 		typec_attach_wait_entry(tcpc_dev);
 #ifdef CONFIG_WATER_DETECTION
@@ -2033,6 +2095,8 @@ int tcpc_typec_handle_cc_change(struct tcpc_device *tcpc_dev)
 #endif /* CONFIG_WATER_DETECTION */
 	} else
 		typec_detach_wait_entry(tcpc_dev);
+#endif
+/*prize-sunshuai-20190213, add for Wireless charging and OTG switching  end */
 
 	return 0;
 }

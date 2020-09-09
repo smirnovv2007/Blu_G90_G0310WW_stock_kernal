@@ -66,6 +66,14 @@
 #include "mtk_charger_intf.h"
 #include "mtk_switch_charging.h"
 
+
+//start add by sunshuai for Bright screen current limit  20181130
+
+#if defined(CONFIG_PRIZE_CHARGE_CTRL_POLICY)
+extern int g_charge_is_screen_on;
+#endif
+//end add by sunshuai for Bright screen current limit   20181130
+
 static int _uA_to_mA(int uA)
 {
 	if (uA == -1)
@@ -273,6 +281,27 @@ static void swchg_select_charging_current_limit(struct charger_manager *info)
 			}
 		}
 	}
+	
+//prize add by sunshuai for Bright screen current limit  20181130 start
+#if defined(CONFIG_PRIZE_CHARGE_CTRL_POLICY)
+		if (g_charge_is_screen_on){
+			if (pdata->charging_current_limit > 1000000){
+				pdata->charging_current_limit = 1000000;
+			}
+			if (pdata->input_current_limit > 1000000){
+				pdata->input_current_limit = 1000000;
+			}
+//prize add by sunshuai for Bright screen current limit  for master charge	2019-0429 start
+			if ((mtk_pe20_get_is_enable(info) && mtk_pe20_get_is_connect(info))
+				|| (mtk_pe_get_is_enable(info) && mtk_pe_get_is_connect(info))){
+				pdata->input_current_limit = 700000;
+				pdata->charging_current_limit = 1000000;
+			}
+		}
+		printk("PRIZE master  charge current %d:%d\n",pdata->input_current_limit,pdata->charging_current_limit);	
+//prize add by sunshuai for Bright screen current limit  for master charge  2019-0429 end
+#endif
+//prize add by sunshuai for Bright screen current limit	   20181130 end
 
 	if (pdata->thermal_charging_current_limit != -1) {
 		if (pdata->thermal_charging_current_limit <
@@ -633,6 +662,11 @@ static int mtk_switch_charging_run(struct charger_manager *info)
 			mtk_pe_check_charger(info);
 	}
 
+//prize added by huarui, eta6937 support, 20190111-start
+#if defined(CONFIG_HL7005ALL_CHARGER_SUPPORT)
+	charger_dev_kick_wdt(info->chg1_dev);	//PRIZE
+#endif
+//prize added by huarui, eta6937 support, 20190111-end
 	do {
 		switch (swchgalg->state) {
 			chr_err("%s_2 [%d] %d\n", __func__, swchgalg->state,

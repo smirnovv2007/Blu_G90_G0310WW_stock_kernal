@@ -212,3 +212,20 @@ config MTK_FLASHLIGHT_DLPT
 	  the current of battary dynamicly. It will start by request
 	  and notice user by kernel notifier.
 
+
+###prize
+config MTK_FLASHLIGHT_AW3641_GPIO
+	tristate "Mediatek flashlight aw gpio driver"
+	depends on MTK_FLASHLIGHT
+	default n
+	help
+		This is flashlight aw gpio driver for camera.
+
+
+
+config MTK_FLASHLIGHT_ISINK
+	tristate "Mediatek flashlight isink driver"
+	depends on MTK_FLASHLIGHT
+	default n
+	help
+		This is flashlight isink gpio driver for camera.

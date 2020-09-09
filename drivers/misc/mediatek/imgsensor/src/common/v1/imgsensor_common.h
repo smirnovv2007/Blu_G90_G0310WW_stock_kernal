@@ -24,7 +24,9 @@
 /************************************************************************
  * Debug configuration
  ************************************************************************/
-
+//prize-modify-pengzhipeng-20191122-start
+#define MIPI_SWITCH
+//prize-modify-pengzhipeng-20191122-end
 #define PLATFORM_POWER_SEQ_NAME "platform_power_seq"
 #define DEBUG_CAMERA_HW_K
 

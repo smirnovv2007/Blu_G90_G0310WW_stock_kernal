@@ -60,6 +60,12 @@
 #ifdef CONFIG_MTK_SMI_EXT
 static int current_mmsys_clk = MMSYS_CLK_MEDIUM;
 #endif
+//prize-lixuefeng-20150512-start
+#if defined(CONFIG_PRIZE_HARDWARE_INFO)
+#include "../../../hardware_info/hardware_info.h"
+extern struct hardware_info current_camera_info[5];
+#endif
+//prize-lixuefeng-20150512-end
 
 /* Test Only!! Open this define for temperature meter UT */
 /* Temperature workqueue */
@@ -78,6 +84,7 @@ static struct cdev *gpimgsensor_cdev;
 static struct class *gpimgsensor_class;
 
 static DEFINE_MUTEX(gimgsensor_mutex);
+static DEFINE_MUTEX(gimgsensor_open_mutex);//prize-huangzhanbin-20200821-fix the bug:repeatedly open and close camera cause can't connect to camera
 
 struct IMGSENSOR  gimgsensor;
 struct IMGSENSOR *pgimgsensor = &gimgsensor;
@@ -463,6 +470,41 @@ static inline int imgsensor_check_is_alive(struct IMGSENSOR_SENSOR *psensor)
 	} else {
 		pr_info(" Sensor found ID = 0x%x\n", sensorID);
 		err = ERROR_NONE;
+		//prize-lixuefeng-20150512-start
+		#if defined(CONFIG_PRIZE_HARDWARE_INFO)
+		if(psensor->inst.sensor_idx >= 0 && psensor->inst.sensor_idx < 5)
+		{
+			if (sensorID == 0x30a) {
+				strcpy(current_camera_info[3].chip,psensor_inst->psensor_name);
+				sprintf(current_camera_info[3].id,"0x%04x",sensorID);
+				strcpy(current_camera_info[3].vendor,"unknow");
+
+			}else if (sensorID == 0x6513) {
+				strcpy(current_camera_info[3].chip,psensor_inst->psensor_name);
+				sprintf(current_camera_info[3].id,"0x%04x",sensorID);
+				strcpy(current_camera_info[3].vendor,"unknow");
+
+			}else{
+				strcpy(current_camera_info[psensor->inst.sensor_idx].chip,psensor_inst->psensor_name);
+    			sprintf(current_camera_info[psensor->inst.sensor_idx].id,"0x%04x",sensorID);
+    			strcpy(current_camera_info[psensor->inst.sensor_idx].vendor,"unknow");
+			}
+			if (1){
+				MSDK_SENSOR_RESOLUTION_INFO_STRUCT sensorResolution;
+				imgsensor_sensor_get_resolution(psensor,&sensorResolution);
+				if (sensorID == 0x30a){
+					sprintf(current_camera_info[3].more,"%d*%d",sensorResolution.SensorFullWidth,sensorResolution.SensorFullHeight);
+
+				}else if (sensorID == 0x6513){
+					sprintf(current_camera_info[3].more,"%d*%d",sensorResolution.SensorFullWidth,sensorResolution.SensorFullHeight);
+
+				}else{
+					sprintf(current_camera_info[psensor->inst.sensor_idx].more,"%d*%d",sensorResolution.SensorFullWidth,sensorResolution.SensorFullHeight);
+				}
+			}
+		}
+		#endif
+		//prize-lixuefeng-20150512-end
 	}
 
 	if (err != ERROR_NONE)
@@ -2650,6 +2692,7 @@ CAMERA_HW_Ioctl_EXIT:
 
 static int imgsensor_open(struct inode *a_pstInode, struct file *a_pstFile)
 {
+	mutex_lock(&gimgsensor_open_mutex);//prize-huangzhanbin-20200821-fix the bug:repeatedly open and close camera cause can't connect to camera
 	if (atomic_read(&pgimgsensor->imgsensor_open_cnt) == 0)
 		imgsensor_clk_enable_all(&pgimgsensor->clk);
 
@@ -2658,12 +2701,14 @@ static int imgsensor_open(struct inode *a_pstInode, struct file *a_pstFile)
 	    "%s %d\n",
 	    __func__,
 	    atomic_read(&pgimgsensor->imgsensor_open_cnt));
+	mutex_unlock(&gimgsensor_open_mutex);//prize-huangzhanbin-20200821-fix the bug:repeatedly open and close camera cause can't connect to camera
 	return 0;
 }
 
 static int imgsensor_release(struct inode *a_pstInode, struct file *a_pstFile)
 {
 	enum IMGSENSOR_SENSOR_IDX i = IMGSENSOR_SENSOR_IDX_MIN_NUM;
+	mutex_lock(&gimgsensor_open_mutex);//prize-huangzhanbin-20200821-fix the bug:repeatedly open and close camera cause can't connect to camera
 	atomic_dec(&pgimgsensor->imgsensor_open_cnt);
 	if (atomic_read(&pgimgsensor->imgsensor_open_cnt) == 0) {
 		imgsensor_clk_disable_all(&pgimgsensor->clk);
@@ -2682,6 +2727,7 @@ static int imgsensor_release(struct inode *a_pstInode, struct file *a_pstFile)
 	    "%s %d\n",
 	    __func__,
 	    atomic_read(&pgimgsensor->imgsensor_open_cnt));
+	mutex_unlock(&gimgsensor_open_mutex);//prize-huangzhanbin-20200821-fix the bug:repeatedly open and close camera cause can't connect to camera
 	return 0;
 }
 

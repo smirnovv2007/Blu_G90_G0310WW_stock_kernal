@@ -100,6 +100,12 @@
 #include "ddp_aal.h"
 #include "ddp_gamma.h"
 
+//prize-lixuefeng-20150512-start
+#if defined(CONFIG_PRIZE_HARDWARE_INFO)
+#include "../../../hardware_info/hardware_info.h"
+extern struct hardware_info current_lcm_info;
+#endif
+//prize-lixuefeng-20150512-end
 #define MMSYS_CLK_LOW (0)
 #define MMSYS_CLK_HIGH (1)
 
@@ -4058,6 +4064,11 @@ int primary_display_init(char *lcm_name, unsigned int lcm_fps,
 		goto done;
 	} else {
 		DISPCHECK("disp_lcm_probe SUCCESS\n");
+		//prize-lixuefeng-20150512-start
+		#if defined(CONFIG_PRIZE_HARDWARE_INFO)
+		current_lcm_info=pgc->plcm->drv->lcm_info;
+		#endif
+		//prize-lixuefeng-20150512-end
 	}
 
 	lcm_param = disp_lcm_get_params(pgc->plcm);

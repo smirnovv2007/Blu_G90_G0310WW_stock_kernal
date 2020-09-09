@@ -15,7 +15,28 @@
 #define __MT65XX_LCM_LIST_H__
 
 #include <lcm_drv.h>
+/*prize-add lcm-tangcong-20200819-start*/
+extern struct LCM_DRIVER st7703_hdplus_dsi_vdo_cmi_ykl_lcm_drv;
+/*prize-add lcm-tangcong-20200819-end*/
+/*prize-add lcm-pengguangyi-20190119-start*/
+extern struct LCM_DRIVER hx83112_fhdp_dsi_vdo_auo_drv;
+/*prize-add lcm-pengguangyi-20190119-end*/
+//prize add by lishuwen 20191226 start
+extern struct LCM_DRIVER ili9881d_hdplus1560_dsi_vdo_hsd_lcm_drv;
+extern struct LCM_DRIVER ili9881c_hdplus_dsi_vdo_cmi_bx_lcm_drv;
+extern struct LCM_DRIVER ili9881c_hdplus_dsi_vdo_cmi_jt_lcm_drv;
+extern struct LCM_DRIVER ili9881c_hd_dsi_vdo_cmi_pcba_ata_lcm_drv;
+//prize add by lishuwen 20191226 end
+/*prize-add lcm -tangcong-20200612-start*/
+extern struct LCM_DRIVER jd9366d_hdplus_dsi_vdo_dzx_lcm_drv;
+/*prize-add lcm -tangcong-20200612-end*/
+//prize-add-pengzhipeng-20200304-start
+extern struct LCM_DRIVER hx83102d_hdp_dsi_vdo_boe_drip_incell_lcm_drv;
+//prize-add-pengzhipeng-20200304-end
 
+/* prize added by chenjiaxi, lcm, 20190401-start */
+extern struct LCM_DRIVER nt35532_hd720_dsi_vdo_xm_lcm_drv;
+/* prize added by chenjiaxi, lcm, 20190401-end */
 extern struct LCM_DRIVER otm1282a_hd720_dsi_vdo_60hz_lcm_drv;
 extern struct LCM_DRIVER otm1282a_hd720_dsi_vdo_lcm_drv;
 extern struct LCM_DRIVER nt35595_fhd_dsi_cmd_truly_8163_lcm_drv;
@@ -309,7 +330,21 @@ extern struct LCM_DRIVER nt51021h_wuxga_vdo_oncell_boe_lcm_drv;
 extern struct LCM_DRIVER nt36672ah_hdp_dsi_vdo_tcl_csot_lcm_drv;
 extern struct LCM_DRIVER sofeg01_fhdplus_dsi_cmd_samsung_lcm_drv;
 extern struct LCM_DRIVER oppo_tianma_td4310_fhdp_dsi_vdo_rt5081_lcm_drv;
+/*prize-add HX8394F-chenhongjin-20190118-start*/
+extern struct LCM_DRIVER hx8394f_dsi_vdo_t20_lcm_drv;
+/*prize-add HX8394F-chenhongjin-20190118-end*/
 
+/* prize added by mahuiyin, lcm, 20190823-start */
+extern struct LCM_DRIVER ili9881c_hd_dsi_vdo_cmi_ata_lcm_drv;
+extern struct LCM_DRIVER ft8006p_hdp_dsi_vdo_boe_drip_incell_lcm_drv;
+extern struct LCM_DRIVER ft8719p_hdp_dsi_vdo_boe_drip_incell_lcm_drv;
+/* prize added by mahuiyin, lcm, 20190823-end */
+/*diliwu add lcm songhezhu 20191231 start*/
+extern struct LCM_DRIVER nl9911_fhdp_vdo_incell_lcm_drv;
+/*diliwu add lcm songhezhu 20191231 end*/
+/*prize-add  lcm zhaopengge 20200826 start*/
+extern struct LCM_DRIVER nl9911_fhdp_dsi_vdo_incell_lcm_drv;
+/*prize-add  add lcm zhaopengge 20200826 end*/
 #ifdef BUILD_LK
 extern void mdelay(unsigned long msec);
 #endif

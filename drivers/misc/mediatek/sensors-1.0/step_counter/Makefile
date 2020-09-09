@@ -21,3 +21,7 @@ obj-$(CONFIG_MTK_STEPSIGNHUB)		+=	stepsignhub/
 ifeq ($(CONFIG_CUSTOM_KERNEL_STEP_COUNTER),"OTHER_VENDOR")
 obj-y += other_vendor/
 endif
+
+#prize added by huarui, sensor driver, 20190111-start
+obj-$(CONFIG_MTK_BMI160_STC)   +=  bmi160-stc/
+#prize added by huarui, sensor driver, 20190111-end

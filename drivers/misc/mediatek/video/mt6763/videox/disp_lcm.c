@@ -1342,12 +1342,24 @@ int disp_lcm_init(struct disp_lcm_handle *plcm, int force)
 	}
 }
 
+/* prize added by tangcong, panel master mipi clk, 20200417-start */
+extern uint32_t Pre_CLK;
+/* prize added by tangcong, panel master mipi clk, 20100417-end */
+
 struct LCM_PARAMS *disp_lcm_get_params(struct disp_lcm_handle *plcm)
 {
 	/* DISPFUNC(); */
 
 	if (_is_lcm_inited(plcm))
+		/* prize modified by tangcong, panel master mipi clk, 20200417-start */
+    {
+        if(Pre_CLK > 0)
+        {
+            plcm->params->dsi.PLL_CLOCK = Pre_CLK;
+        }
 		return plcm->params;
+    }
+/* prize modified by tangcong, panel master mipi clk, 20200417-end */
 	else
 		return NULL;
 }

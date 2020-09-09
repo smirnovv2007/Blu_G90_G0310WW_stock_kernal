@@ -671,7 +671,11 @@ firmware_class.path=/vendor/firmware";
 	goodix_fp: fingerprint {
 		compatible = "mediatek,goodix-fp";
 	};
-
+/*prize-add-pengzhipeng-20191105-start*/
+	fpc: fpc_fingerprint {
+		compatible = "mediatek,mt6765-fpc";
+	};
+/*prize-add-pengzhipeng-20191105-end*/	
 	mt6357_gauge {
 		compatible = "mediatek,mt6357_gauge";
 		gauge_name = "gauge";
@@ -1775,7 +1779,18 @@ firmware_class.path=/vendor/firmware";
 				"PWM5-main", "PWM6-main",
 				"PWM-HCLK-main", "PWM-main";
 	};
-
+	//prize-modify-pengzhipeng-20191223-start
+	spi1: spi@11010000 {
+		compatible = "mediatek,mt6765-spi";
+		mediatek,pad-select = <0>;
+		reg = <0 0x11010000 0 0x1000>;
+		interrupts = <GIC_SPI 122 IRQ_TYPE_LEVEL_LOW>;
+		clocks = <&topckgen CLK_TOP_SYSPLL3_D2>,
+				<&topckgen CLK_TOP_SPI_SEL>,
+				<&infracfg_ao CLK_IFR_SPI1>;
+		clock-names = "parent-clk", "sel-clk", "spi-clk";
+	};
+	//prize-modify-pengzhipeng-20191223-end
 	spi0: spi@1100a000 {
 		compatible = "mediatek,mt6765-spi";
 		mediatek,pad-select = <0>;
@@ -1867,16 +1882,7 @@ firmware_class.path=/vendor/firmware";
 		reg = <0 0x1100e000 0 0x1000>;
 	};
 
-	spi1: spi@11010000 {
-		compatible = "mediatek,mt6765-spi";
-		mediatek,pad-select = <0>;
-		reg = <0 0x11010000 0 0x1000>;
-		interrupts = <GIC_SPI 122 IRQ_TYPE_LEVEL_LOW>;
-		clocks = <&topckgen CLK_TOP_SYSPLL3_D2>,
-				<&topckgen CLK_TOP_SPI_SEL>,
-				<&infracfg_ao CLK_IFR_SPI1>;
-		clock-names = "parent-clk", "sel-clk", "spi-clk";
-	};
+	
 
 	spi2: spi@11012000 {
 		compatible = "mediatek,mt6765-spi";
@@ -2164,15 +2170,15 @@ firmware_class.path=/vendor/firmware";
 				<&mmsys_config CLK_MM_IMG_DL_ASYNC_TOP>;
 		clock-names = "CAM_MDP", "IMG_DL_RELAY", "IMG_DL_ASYNC_TOP";
 	};
-
+/* prize-modify-pengzhipeng-20200220-start */
 	nfc:nfc {
 			compatible = "mediatek,nfc-gpio-v2";
-			gpio-rst = <172>;
-			gpio-rst-std = <&pio 172 0x0>;
-			gpio-irq = <10>;
-			gpio-irq-std = <&pio 10 0x0>;
+			gpio-rst = <18>;
+			gpio-rst-std = <&pio 18 0x0>;
+			gpio-irq = <19>;
+			gpio-irq-std = <&pio 19 0x0>;
 		};
-
+/* prize-modify-pengzhipeng-20200220-end */
 	irq_nfc: irq_nfc {
 		compatible = "mediatek,irq_nfc-eint";
 	};
@@ -2731,7 +2737,7 @@ firmware_class.path=/vendor/firmware";
 
 	flashlights_mt6370: flashlights_mt6370 {
 		compatible = "mediatek,flashlights_mt6370";
-		decouple = <0>;
+		decouple = <1>;  /* prize  modify by zhuzhengjiang for single flash 20200226 */
 		channel@1 {
 			type = <0>;
 			ct = <0>;
@@ -2787,18 +2793,17 @@ firmware_class.path=/vendor/firmware";
 	charger: charger {
 		compatible = "mediatek,charger";
 		algorithm_name = "SwitchCharging";
-		/* enable_sw_jeita; */
+		/* enable_sw_jeita;
 		enable_pe_plus;
 		enable_pe_2;
 		enable_pe_3;
-		enable_pe_4;
+		enable_pe_4;*/
 		enable_type_c;
 		power_path_support;
-		enable_dynamic_mivr;
 		disable_pd_dual;
 
 		/* common */
-		battery_cv = <4350000>;
+		battery_cv = <4410000>;
 		max_charger_voltage = <6500000>;
 		min_charger_voltage = <4600000>;
 
@@ -2813,7 +2818,7 @@ firmware_class.path=/vendor/firmware";
 		usb_charger_current_configured = <500000>;
 		usb_charger_current = <500000>;
 		ac_charger_current = <2050000>;
-		ac_charger_input_current = <3200000>;
+		ac_charger_input_current = <2050000>;
 		non_std_ac_charger_current = <500000>;
 		charging_host_charger_current = <1500000>;
 		apple_1_0a_charger_current = <650000>;
@@ -2841,10 +2846,10 @@ firmware_class.path=/vendor/firmware";
 
 		/* battery temperature protection */
 		enable_min_charge_temp;
-		min_charge_temp = <0>;
-		min_charge_temp_plus_x_degree = <6>;
-		max_charge_temp = <50>;
-		max_charge_temp_minus_x_degree = <47>;
+		min_charge_temp = <(-5)>;
+		min_charge_temp_plus_x_degree = <0>;
+		max_charge_temp = <55>;
+		max_charge_temp_minus_x_degree = <50>;
 
 		/* PE */
 		ta_12v_support;
@@ -3168,6 +3173,13 @@ firmware_class.path=/vendor/firmware";
 #ifdef CONFIG_CHARGER_RT9471
 #include "rt9471.dtsi"
 #endif
+
 #ifdef CONFIG_MTK_ENABLE_GENIEZONE
 #include "trusty.dtsi"
 #endif
+
+/* prize-add-sunshuai-20191129-get2015info from dts-start */
+#ifdef CONFIG_MTK_CW2015_SUPPORT_OF
+#include "fuelguage.dtsi"
+#endif
+/* prize-add-sunshuai-20191129-get2015info from dts-end */

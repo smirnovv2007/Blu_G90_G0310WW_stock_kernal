@@ -22,7 +22,17 @@
 
 
 #include "imgsensor_hw.h"
-
+//prize-modify-pengzhipeng-20190918-start
+#ifdef MIPI_SWITCH
+extern struct pinctrl_state *ppinctrl_cam_mipi_sel_h;
+extern struct pinctrl_state *ppinctrl_cam_mipi_sel_l;
+extern struct pinctrl		 *ppinctrl_cam;
+extern struct pinctrl_state *ppinctrl_cam_mipi_en_h;
+extern struct pinctrl_state *ppinctrl_cam_mipi_en_l;
+#endif
+extern void set_avdd_regulator(int status);
+int curr_sensor_id =0;
+//prize-modify-pengzhipeng-20190918-end
 enum IMGSENSOR_RETURN imgsensor_hw_release_all(struct IMGSENSOR_HW *phw)
 {
 	int i;
@@ -116,7 +126,7 @@ static enum IMGSENSOR_RETURN imgsensor_hw_power_sequence(
 		}
 		ppwr_seq++;
 	}
-
+       curr_sensor_id = (int)sensor_idx;
 	if (ppwr_seq->name == NULL)
 		return IMGSENSOR_RETURN_ERROR;
 
@@ -136,6 +146,10 @@ static enum IMGSENSOR_RETURN imgsensor_hw_power_sequence(
 		 * psensor_pwr->id[ppwr_info->pin]);
 		 */
 
+			//prize-modify-zhuzhengjiang for dcam avdd -20200302-start
+			if(sensor_idx == 0 && ppwr_info->pin ==IMGSENSOR_HW_PIN_AVDD )
+				set_avdd_regulator(1);
+			//prize-modify-zhuzhengjiang for dcam avdd -20200302-end
 			if (pdev->set != NULL)
 				pdev->set(
 				    pdev->pinstance,
@@ -159,6 +173,10 @@ static enum IMGSENSOR_RETURN imgsensor_hw_power_sequence(
 				pdev =
 				    phw->pdev[psensor_pwr->id[ppwr_info->pin]];
 				mdelay(ppwr_info->pin_on_delay);
+				//prize-modify-zhuzhengjiang for dcam avdd -20200302-start
+				if(sensor_idx == 0 && ppwr_info->pin ==IMGSENSOR_HW_PIN_AVDD )
+					set_avdd_regulator(0);
+				//prize-modify-zhuzhengjiang for dcam avdd -20200302-end
 
 				if (pdev->set != NULL)
 					pdev->set(
@@ -200,6 +218,69 @@ enum IMGSENSOR_RETURN imgsensor_hw_power(
 
 
 	snprintf(str_index, sizeof(str_index), "%d", sensor_idx);
+	//prize-modify-pengzhipeng-20190918-start
+#ifdef MIPI_SWITCH
+     if(pwr_status == IMGSENSOR_HW_POWER_STATUS_ON)
+	{
+		if (!IS_ERR(ppinctrl_cam_mipi_en_l))
+		{
+			pinctrl_select_state(ppinctrl_cam, ppinctrl_cam_mipi_en_l);
+		}
+		else
+		{
+			printk("ppinctrl_cam_mipi_sel_state h pinctrl err\n");
+		}
+		mdelay(5);	
+	}
+     else if(pwr_status == IMGSENSOR_HW_POWER_STATUS_OFF)
+	{
+		if (!IS_ERR(ppinctrl_cam_mipi_en_h))
+		{
+			pinctrl_select_state(ppinctrl_cam, ppinctrl_cam_mipi_en_h);
+		}
+		else
+		{
+			printk("ppinctrl_cam_mipi_sel_state l pinctrl err\n");
+		}
+	}
+
+	if(pwr_status == IMGSENSOR_HW_POWER_STATUS_ON && sensor_idx == IMGSENSOR_SENSOR_IDX_MAIN)
+	{
+		if (!IS_ERR(ppinctrl_cam_mipi_sel_l))
+		{
+			pinctrl_select_state(ppinctrl_cam, ppinctrl_cam_mipi_sel_l);
+		}
+		else
+		{
+			printk("ppinctrl_cam_mipi_sel_state l pinctrl err\n");
+		}
+		mdelay(5);
+	}
+	else if(pwr_status == IMGSENSOR_HW_POWER_STATUS_ON && sensor_idx == IMGSENSOR_SENSOR_IDX_MAIN2)
+	{
+		if (!IS_ERR(ppinctrl_cam_mipi_sel_h))
+		{
+			pinctrl_select_state(ppinctrl_cam, ppinctrl_cam_mipi_sel_h);
+		}
+		else
+		{
+			printk("ppinctrl_cam_mipi_sel_state h pinctrl err\n");
+		}
+		mdelay(5);
+	}
+	else if(pwr_status == IMGSENSOR_HW_POWER_STATUS_OFF && sensor_idx == IMGSENSOR_SENSOR_IDX_MAIN)
+	{
+		if (!IS_ERR(ppinctrl_cam_mipi_sel_l))
+		{
+			pinctrl_select_state(ppinctrl_cam, ppinctrl_cam_mipi_sel_l);
+		}
+		else
+		{
+			printk("ppinctrl_cam_mipi_sel_state l pinctrl err\n");
+		}
+	}
+#endif
+//prize-modify-pengzhipeng-20190918-end
 	imgsensor_hw_power_sequence(
 	    phw,
 	    sensor_idx,

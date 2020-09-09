@@ -107,7 +107,6 @@ obj-$(CONFIG_MTK_GPU_SUPPORT) += gpu/
 obj-$(CONFIG_MTK_VPU_SUPPORT) += vpu/
 obj-$(CONFIG_MTK_MDLA_SUPPORT) += mdla/
 obj-$(CONFIG_MTK_CCU)	+= ccu/src/
-
 obj-$(CONFIG_MTK_RTC)	+= rtc/
 obj-y += mtprintk/
 obj-$(CONFIG_MTK_XO)	+= xo/
@@ -118,6 +117,7 @@ obj-$(CONFIG_MEDIATEK_SOLUTION)	+= aee/
 obj-$(CONFIG_MTK_MLOG) += mlog/
 obj-y += cameraisp/
 obj-$(CONFIG_MTK_CMDQ) += cmdq/
+obj-$(CONFIG_MTK_CMDQ) += mdp/
 obj-$(CONFIG_MTK_CMDQ_TAB) += cmdq/
 obj-$(CONFIG_MTK_CQDMA) += cqdma/
 obj-$(CONFIG_MTK_LCM) += lcm/
@@ -136,7 +136,9 @@ obj-$(CONFIG_MD32_SUPPORT)     += md32/
 obj-$(CONFIG_USB)	+= usb_boost/
 obj-$(CONFIG_MU3_PHY)   += mu3phy/
 obj-$(CONFIG_USB_MU3D_DRV)	+= mu3d/
+#prize add by liaojie for patch MTK_PATCH:t-alps-release-q0.mp1-V6 20191218-start
 obj-$(CONFIG_USB_MTK_DUALMODE)	+= xhci/
+#prize add by liaojie for patch MTK_PATCH:t-alps-release-q0.mp1-V6 20191218-end
 obj-$(CONFIG_MTK_SYS_CIRQ) += cirq/
 obj-y += atf/
 obj-$(CONFIG_THERMAL)   += thermal/
@@ -155,13 +157,27 @@ obj-$(CONFIG_MTK_FIQ_CACHE) += fiq_cache/
 obj-$(CONFIG_MTK_DEBUG_LATCH) += debug_latch/
 obj-$(CONFIG_MTK_USB2JTAG_SUPPORT) += usb2jtag/
 obj-$(CONFIG_MTK_WATCHPOINT) += watchpoint/
+#prize-add-pengzhipeng-20191102-start
+obj-$(CONFIG_PRIZE_DUAL_CAMERA_ENABLE) += prize_dual_camera/
+#prize-add-pengzhipeng-20191102-end
 
 obj-$(CONFIG_TRUSTKERNEL_TEE_SUPPORT) += tkcore/
 obj-y += perf/
 
 #io boost
 obj-y += io_boost/
+#prize-add prize-wangyunqing-20181110-start
+obj-$(CONFIG_PRIZE_HARDWARE_INFO) += hardware_info/
+#prize-add prize-wangyunqing-20181110-end
 
+#prize-add prize-zhaopengge-20200827-start
+obj-$(CONFIG_PRIZE_AW9203) += aw9203/
+obj-$(CONFIG_PRIZE_DUAL_HALL_AS1800) += hall_as1800/
+#prize-add prize-zhaopengge-20200827-end
+
+#/*prize add by zhengjiang.zhu@prize.Camera.Driver for TOF 20200316  start*/
+obj-$(CONFIG_STMVL53L1)			+= vl53L1/
+#/*prize add by zhengjiang.zhu@prize.Camera.Driver for TOF 20200316  start*/
 ifeq ($(CONFIG_MTK_HAVE_EXTERNAL_VENDOR_PATH),y)
 obj-y += ../../../../$(subst $\",,$(CONFIG_MTK_EXTERNAL_VENDOR_PATH))
 endif

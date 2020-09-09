@@ -17,7 +17,11 @@
 #include <linux/device.h>
 #include <linux/platform_device.h>
 #include <linux/regulator/consumer.h>
-
+//prize-add prize-wangyunqing-20181110-start
+#if defined(CONFIG_PRIZE_HARDWARE_INFO)
+#include "../../hardware_info/hardware_info.h"
+#endif
+//prize-add prize-wangyunqing-20181110-end
 #ifndef ARY_SIZE
 #define ARY_SIZE(x) (sizeof((x)) / sizeof((x[0])))
 #endif
@@ -478,7 +482,9 @@ struct LCM_DPI_PARAMS {
 
 /* ------------------------------------------------------------------------- */
 #define RT_MAX_NUM 10
-#define ESD_CHECK_NUM 3
+//prize-add-pengzhipeng-20191107-start
+#define ESD_CHECK_NUM 4
+//prize-add-pengzhipeng-20191107-end
 struct LCM_esd_check_item {
 	unsigned char cmd;
 	unsigned char count;
@@ -825,6 +831,7 @@ struct dsi_cmd_desc {
 	unsigned int vc;
 	unsigned int dlen;
 	unsigned int link_state;
+	unsigned int cmd;
 	char *payload;
 };
 
@@ -841,6 +848,9 @@ struct LCM_UTIL_FUNCS {
 	void (*send_cmd)(unsigned int cmd);
 	void (*send_data)(unsigned int data);
 	unsigned int (*read_data)(void);
+
+	void (*dsi_set_cmdq_V4)(struct LCM_setting_table_V3 *para_list,
+			unsigned int size,	bool hs);
 
 	void (*dsi_set_cmdq_V3)(struct LCM_setting_table_V3 *para_list,
 			unsigned int size, unsigned char force_update);
@@ -884,6 +894,11 @@ enum LCM_DRV_IOCTL_CMD {
 
 struct LCM_DRIVER {
 	const char *name;
+	//prize-add prize-wangyunqing-20181110-start	
+    #if defined(CONFIG_PRIZE_HARDWARE_INFO)
+	struct hardware_info lcm_info;
+    #endif
+//prize-add prize-wangyunqing-20181110-end
 	void (*set_util_funcs)(const struct LCM_UTIL_FUNCS *util);
 	void (*get_params)(struct LCM_PARAMS *params);
 
@@ -941,6 +956,8 @@ struct LCM_DRIVER {
 	void (*set_pwm_for_mix)(int enable);
 
 	void (*aod)(int enter);
+	void (*set_aod_area_cmdq)(void *handle, unsigned char *area);
+	int (*get_doze_delay)(void);
 };
 
 /* LCM Driver Functions */

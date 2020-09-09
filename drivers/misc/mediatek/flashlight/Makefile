@@ -40,3 +40,6 @@ subdir-ccflags-y += \
 	-I$(MTK_CUSTOM_PATH)/pmic/include \
 	-I$(MTK_CUSTOM_PATH)/pmic
 
+###prize
+obj-$(CONFIG_MTK_FLASHLIGHT_AW3641_GPIO)     += flashlights-aw3641-gpio.o
+obj-$(CONFIG_MTK_FLASHLIGHT_ISINK)     += flashlights-isink.o

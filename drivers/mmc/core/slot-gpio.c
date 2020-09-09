@@ -36,8 +36,11 @@ static irqreturn_t mmc_gpio_cd_irqt(int irq, void *dev_id)
 	struct mmc_host *host = dev_id;
 
 	host->trigger_card_event = true;
+#if defined(CONFIG_PROJECT_KOOBEE_K6508)
+	mmc_detect_change(host, msecs_to_jiffies(1));
+#else
 	mmc_detect_change(host, msecs_to_jiffies(200));
-
+#endif
 	return IRQ_HANDLED;
 }
 

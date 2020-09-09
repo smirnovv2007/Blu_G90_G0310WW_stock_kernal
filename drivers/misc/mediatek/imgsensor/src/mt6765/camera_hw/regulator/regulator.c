@@ -47,7 +47,10 @@ static const int int_oc_type[REGULATOR_TYPE_MAX_NUM] = {
 
 
 static struct REGULATOR reg_instance;
-
+/*zhengjiang.zhu@prize.Camera.Driver  2018/11/14  add for dual camera sub avdd*/
+static struct regulator *g_avdd_pregulator;
+static struct regulator *g_dvdd_pregulator;
+/*zhengjiang.zhu@prize.Camera.Driver  2018/11/14  end for dual camera sub avdd*/
 static void imgsensor_oc_handler1(void)
 {
 	pr_debug("[regulator]%s enter vcama oc %d\n",
@@ -196,6 +199,16 @@ static enum IMGSENSOR_RETURN regulator_init(void *pinstance)
 				regulator_control[i].pregulator_type);
 			preg->pregulator[j][i] =
 			    regulator_get(pdevice, str_regulator_name);
+		/*zhengjiang.zhu@prize.Camera.Driver  2018/11/14  add for dual camera sub avdd*/
+		if (j == IMGSENSOR_SENSOR_IDX_MAIN || j == IMGSENSOR_SENSOR_IDX_MAIN2)
+		{
+			if(i == REGULATOR_TYPE_VCAMA)
+				g_avdd_pregulator = preg->pregulator[j][i];
+			if(i == REGULATOR_TYPE_VCAMIO)
+				g_dvdd_pregulator = preg->pregulator[j][i];
+			
+		}
+		/*zhengjiang.zhu@prize.Camera.Driver  2018/11/14  end for dual camera sub avdd*/
 
 			if (preg->pregulator[j][i] == NULL)
 				pr_err("regulator[%d][%d]  %s fail!\n",
@@ -233,6 +246,40 @@ static enum IMGSENSOR_RETURN regulator_release(void *pinstance)
 	return IMGSENSOR_RETURN_SUCCESS;
 }
 
+/*zhengjiang.zhu@prize.Camera.Driver  2018/11/14  add for dual camera sub avdd*/
+void set_avdd_regulator(int status)
+{
+	if(status ==1)
+		{
+		if (regulator_set_voltage(g_avdd_pregulator,REGULATOR_VOLTAGE_2800,REGULATOR_VOLTAGE_2800)){
+			pr_err("[regulator]fail to regulator_set_voltage avdd\n");
+		}
+		if (regulator_enable(g_avdd_pregulator)) {
+			pr_err("[regulator]fail to regulator_enable, powertype\n");
+		}
+	}else{
+		if (regulator_disable(g_avdd_pregulator)) {
+			pr_err("[regulator]fail to avdd regulator_disable, powertype:\n");
+		}
+	}
+}
+void set_dvdd_regulator(int status)
+{
+	if(status ==1)
+		{
+		if (regulator_set_voltage(g_dvdd_pregulator,REGULATOR_VOLTAGE_1800,REGULATOR_VOLTAGE_1800)){
+			pr_err("[regulator]fail to regulator_set_voltage avdd\n");
+		}
+		if (regulator_enable(g_dvdd_pregulator)) {
+			pr_err("[regulator]fail to regulator_enable, powertype\n");
+		}
+	}else{
+		if (regulator_disable(g_dvdd_pregulator)) {
+			pr_err("[regulator]fail to avdd regulator_disable, powertype:\n");
+		}
+	}
+}
+/*zhengjiang.zhu@prize.Camera.Driver  2018/11/14  end for dual camera sub svdd*/
 static enum IMGSENSOR_RETURN regulator_set(
 	void *pinstance,
 	enum IMGSENSOR_SENSOR_IDX   sensor_idx,
@@ -260,6 +307,12 @@ static enum IMGSENSOR_RETURN regulator_set(
 	enable_cnt =
 		&preg->enable_cnt[sensor_idx][
 			reg_type_offset + pin - IMGSENSOR_HW_PIN_AVDD];
+	//prize-modify-zhuzhengjiang-20200604-start
+	if(pin == DVDD)
+	{
+		regulator_init(pinstance);
+	}
+	//prize-modify-zhuzhengjiang-20200604-end
 
 	if (pregulator) {
 		if (pin_state != IMGSENSOR_HW_PIN_STATE_LEVEL_0) {

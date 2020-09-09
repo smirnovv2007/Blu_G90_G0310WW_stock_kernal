@@ -143,6 +143,29 @@ struct battery_thermal_protection_data {
 	int max_charge_temp_minus_x_degree;
 };
 
+//prize-add by sunshuai for German customer gigast requires charging to be controlled according to the battery specification 20190617 start
+#if defined(CONFIG_PRIZE_CHARGE_CTRL_GIGAST)
+/* battery thermal protection */
+enum charge_temperature_state_enum {
+	STEP_INIT = 0,
+	STEP_T1,
+	STEP_T2,
+	STEP_T3
+};
+
+struct battery_temperature_step_charge_data {
+	int current_step;//1: -5-20; 2: 20-45; 3:45-60
+	int start_step1_temp;// -5
+	int start_step2_temp;// 20
+	int start_step3_temp;// 45
+	int end_step3_temp;//60
+	int exit_step3_temp;//40
+	int enter_step3_battery_percentage;//Marker temperature is greater than 45 degrees while battery voltage is greater than 4.1V
+};
+#endif
+//prize-add by sunshuai for German customer gigast requires charging to be controlled according to the battery specification 20190617 end
+
+
 struct charger_custom_data {
 	int battery_cv;	/* uv */
 	int max_charger_voltage;
@@ -392,6 +415,9 @@ struct charger_manager {
 
 	/* dynamic mivr */
 	bool enable_dynamic_mivr;
+#if defined(CONFIG_PRIZE_CHARGE_CTRL_GIGAST)
+	struct battery_temperature_step_charge_data step_info;//prize-add by sunshuai for German customer gigast requires charging to be controlled according to the battery specification 20190617
+#endif
 };
 
 /* charger related module interface */

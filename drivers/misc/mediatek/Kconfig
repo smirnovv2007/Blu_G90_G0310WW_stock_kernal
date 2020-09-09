@@ -416,8 +416,9 @@ source "drivers/misc/mediatek/performance/Kconfig"
 source "drivers/misc/mediatek/usb2jtag/Kconfig"
 
 source "drivers/misc/mediatek/devmpu/Kconfig"
+#prize add by liaojie for patch MTK_PATCH:t-alps-release-q0.mp1-V6 20191218-start
 source "drivers/misc/mediatek/xhci/Kconfig"
-
+#prize add by liaojie for patch MTK_PATCH:t-alps-release-q0.mp1-V6 20191218-end
 endmenu # Peripheral
 
 menu "Performance, Power, and Thermal"
@@ -538,7 +539,13 @@ source "drivers/misc/mediatek/debug_latch/Kconfig"
 source "drivers/misc/mediatek/watchpoint/Kconfig"
 source "drivers/misc/mediatek/Kconfig.default"
 source "drivers/misc/mediatek/tkcore/Kconfig"
-
+#prize-add-pengzhipeng-20191102-start
+source "drivers/misc/mediatek/prize_dual_camera/Kconfig"
+#prize-add-pengzhipeng-20191102-end
+#prize-add-zhaopengge-20200827-start
+source "drivers/misc/mediatek/hall_as1800/Kconfig"
+source "drivers/misc/mediatek/aw9203/Kconfig"
+#prize-add-zhaopengge-20200827-end
 config MTK_FD_LEAK_DETECT
 	bool "Enable MTK fd leak detection"
 	help
@@ -560,4 +567,19 @@ config MTK_DM_VERITY_OFF
 	bool "Disable dm-verity"
 	default n
 
+#prize-add prize-wangyunqing-20181110-start
+source "drivers/misc/mediatek/hardware_info/Kconfig"
+#prize-add prize-wangyunqing-20181110-end
+#/*prize add by zhengjiang.zhu@prize.Camera.Driver for TOF 20200316  start*/
+config STMVL53L1
+	tristate "STM VL53L1 Proximity support"
+	depends on I2C=y
+	default n
+	help
+	  Say Y here if you want to use STMicroelectronics's vl53L1 TOF AF sensor
+	  through I2C interface.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called stmvl53l1.
+#/*prize add by zhengjiang.zhu@prize.Camera.Driver for TOF 20200316  end*/
 endmenu    # Misc

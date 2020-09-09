@@ -98,6 +98,8 @@ const struct flashlight_device_id flashlight_id[] = {
 #else
 const struct flashlight_device_id flashlight_id[] = {
 	/* {TYPE, CT, PART, "NAME", CHANNEL, DECOUPLE} */
+	{0, 0, 0, "flashlights-mt6370", 0, 1},  // prize  modify by zhuzhengjiang for single flash 20200226
+	#if 0
 	{0, 0, 0, "flashlights-none", -1, 0},
 	{0, 1, 0, "flashlights-none", -1, 0},
 	{1, 0, 0, "flashlights-none", -1, 0},
@@ -106,6 +108,7 @@ const struct flashlight_device_id flashlight_id[] = {
 	{0, 1, 1, "flashlights-none", -1, 0},
 	{1, 0, 1, "flashlights-none", -1, 0},
 	{1, 1, 1, "flashlights-none", -1, 0},
+	#endif
 };
 #endif
 
